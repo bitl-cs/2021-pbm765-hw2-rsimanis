@@ -26,16 +26,34 @@ The input data will be formatted as follows:
 
 You can assume the input will fit in the RAM so it will not be excessively large, but some tests might have on the scale of 1000 input lines.
 
-Input can contain empty lines - these must be ignored!
+Input **may contain empty lines** - these must be ignored!
 
 No input line will be longer than 256 characters including newline character.
 
-There are three valid `KEYWORD` values: `NAME`, `FATHER`, `MOTHER`. Keyword `NAME` **starts a new person record**. The following `FATHER` and `MOTHER` lines are optional and contain the names of the parents of this person. A person can have information about both parents, a single parent or no parent at all. Even though life is more complex, for ease of the excercise, each person can have **no more than one** `FATHER` and **no more than one** `MOTHER`. 
+There are three valid `KEYWORD` values: `NAME`, `FATHER`, `MOTHER`. Keyword `NAME` **starts a new person record**. The following `FATHER` and `MOTHER` lines are optional and contain the names of the parents of this person. A person can have information about both parents, a single parent or no parent at all. Even though life is more complex, for ease of the excercise, each person can have **no more than one** `FATHER` and **no more than one** `MOTHER`.
 
+You can assume, that all persons are **strictly divided in generations** and persons of different generations do not pair up.
+
+Single person can have **multiple kids** - either from the same or from a **different partner**!
+
+There can be multiple family trees that are **not connected**!
+
+Example input:
+
+    NAME Son son
+    FATHER Father
+    MOTHER Mother
+    
+    NAME Father
+    MOTHER Granny
+    NAME OtherSon
+    MOTHER OtherMother
+    FATHER OtherFather
+    
 **ON ERRORS**
 Input data can also be erronous. Whenever You detect an error, the program must provide appropriate error message and exit with code 1. If no errors occur - it should exit with code 0.
 
-Errors can be either malformed/erronous data or related to impossible logic. E.g. if the links create loops, or people of different generations have children together.
+Errors can be either malformed/erronous data (wrong keyword, multiple mothers of fathers for a person) or related to impossible logic (links create loops, or people of different generations have children together).
 
 
 **TASK1** Read person data from stdin .
