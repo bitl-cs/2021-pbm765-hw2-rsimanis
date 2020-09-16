@@ -113,3 +113,5 @@ It is passed the pointer to Your new data structure and file descriptor. It uses
 **TASK6** Finish up the main program, so that it sets up Your data structure and passes `stdin` to `read_persons()`. Afterwards, if no error occurs, it calls the `print_persons()` with `stdout`. You should also process the error codes here (or have a `print_error(int error_code)` function).
 
 Hopefully the program now works as described above.
+
+## COMMIT REGULARLY and PUSH ##
