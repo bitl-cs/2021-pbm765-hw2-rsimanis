@@ -16,7 +16,31 @@ In this Homework You will build a family tree printing program.
 ## Step by step INSTRUCTIONS for HW2
 Follow these steps and commit code after each step. The only allowed external libraries/functions are the ones already presented in lectures, like stdio.h or strings.h
 
-**TASK** In file `TODO` create TODO
+**INPUT DATA** The input data will come from `stdin`(this means that input will usually be passed as redirected file with `<`).
+
+The input data will be formatted as follows:
+
+    KEYWORD some person name
+    KEYWORD some person name
+    KEYWORD some person name
+
+You can assume the input will fit in the RAM so it will not be excessively large, but some tests might have on the scale of 1000 input lines.
+
+Input can contain empty lines - these must be ignored!
+
+No input line will be longer than 256 characters including newline character.
+
+There are three valid `KEYWORD` values: `NAME`, `FATHER`, `MOTHER`. Keyword `NAME` **starts a new person record**. The following `FATHER` and `MOTHER` lines are optional and contain the names of the parents of this person. A person can have information about both parents, a single parent or no parent at all. Even though life is more complex, for ease of the excercise, each person can have **no more than one** `FATHER` and **no more than one** `MOTHER`. 
+
+**ON ERRORS**
+Input data can also be erronous. Whenever You detect an error, the program must provide appropriate error message and exit with code 1. If no errors occur - it should exit with code 0.
+
+Errors can be either malformed/erronous data or related to impossible logic. E.g. if the links create loops, or people of different generations have children together.
+
+
+**TASK1** Read person data from stdin .
+
+In file `TODO` create TODO
 
     $ gcc hw2.c TODO
     
