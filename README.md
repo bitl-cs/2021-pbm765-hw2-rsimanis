@@ -14,7 +14,7 @@ Please follow these steps to develop and submit the HW successfully:
 In this Homework You will build a family tree printing program.
 
 ## Step by step INSTRUCTIONS for HW2
-Follow these steps and commit code after each step. The only allowed external libraries/functions are the ones already presented in lectures, like stdio.h or strings.h
+Follow these steps and commit code after each step. The only allowed external libraries/functions are the ones already presented in lectures, like `stdio.h` or `strings.h`
 
 **INPUT DATA** The input data will come from `stdin`(this means that input will usually be passed as redirected file with `<`).
 
