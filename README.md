@@ -1,6 +1,6 @@
 # Homework 2
 
-## Overall process of submitting HW1
+## Overall process of submitting HW2
 Please follow these steps to develop and submit the HW successfully:
 1) **Follow the instructions precisely!** Ask if You don't understand them!
 2) Check out this Git repository and commit Your changes often - **often and granular commits** with easy to understand improvements described in comments will both make it easy for me to understand Your though process and allow Yourself to easily overlook Your progress and revert specific changes in cases of errors.
