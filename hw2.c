@@ -23,7 +23,7 @@ int main()
 	strcpy(p1->name, "peteris");
 	strcpy(p2->name, "andris");
 
-	print_persons(1, head);
+	/* print_persons(1, head); */
 
 	/*while ((kw = read_line(STDIN_FILENO, name)) >= 0) {
 		printf("%d\n", kw);

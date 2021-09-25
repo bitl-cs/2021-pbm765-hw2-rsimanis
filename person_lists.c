@@ -7,20 +7,24 @@
 
 void print_persons(int fd, Person** person_lists)
 {
-	int i;
+	int i, first;
 	Person* p;
 
+	first = 1;
 	for (i = 0; i < MAX_LISTS && (p = person_lists[i]) != NULL; i++) {
+		if (!first)
+			write(fd, "\n", 1);
+		else if (first)
+			first = 0;
 		do {
 			write(fd, p->name, strlen(p->name));
 			write(fd, "\n", 1);
 			p = p->next;
 		} while (p != NULL);
-		write(fd, "\n", 1);
 	}
 }
 
-int add_person(char* name, char* father, char* mother, Person** person_lists)
+int add_person(char* name, char* father_name, char* mother_name, Person** person_lists)
 {
 	if (name == NULL)
 		return -1;
@@ -34,11 +38,11 @@ int add_person(char* name, char* father, char* mother, Person** person_lists)
 	Person* mother;
 	Person* father;
 
-	if (father == NULL || father[0] == '\0')
+	if (father_name == NULL || father_name[0] == '\0')
 		known_father = 0;
 	else
 		known_father = 1;
-	if (mother == NULL || mother[0] == '\0')
+	if (mother_name == NULL || mother_name[0] == '\0')
 		known_mother = 0;
 	else
 		known_mother = 1;
