@@ -8,7 +8,7 @@
 
 int main()
 {
-	/*char name[MAX_LEN];
+	/*char name[MAX_LINE];
 	int kw;*/
 
 	Person* head = (Person*) malloc(sizeof(Person));

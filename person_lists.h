@@ -7,7 +7,7 @@ typedef struct _Person {
 	int generation;
 	int known_mother;
 	int known_father;
-	char name[MAX_LEN];
+	char name[MAX_LINE];
 	struct _Person* next;
 } Person;
 

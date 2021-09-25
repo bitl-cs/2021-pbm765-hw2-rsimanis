@@ -5,16 +5,22 @@
 #include "read_utils.h"
 #include "person_lists.h"
 
-void print_persons(int fd, Person* p)
+void print_persons(int fd, Person** person_lists)
 {
-	while (p != NULL) {
-		write(fd, p->name, strlen(p->name));
+	int i;
+	Person* p;
+
+	for (i = 0; i < MAX_LISTS && (p = person_lists[i]) != NULL; i++) {
+		do {
+			write(fd, p->name, strlen(p->name));
+			write(fd, "\n", 1);
+			p = p->next;
+		} while (p != NULL);
 		write(fd, "\n", 1);
-		p = p->next;
 	}
 }
 
-int add_person(char* name, char* father, char* mother, Person* head)
+int add_person(char* name, char* father, char* mother, Person** person_lists)
 {
 	if (name == NULL)
 		return -1;
@@ -128,11 +134,11 @@ int add_person(char* name, char* father, char* mother, Person* head)
 	return 0;
 }
 
-int read_persons(int fd, Person* head)
+int read_persons(int fd, Person** person_lists)
 {
 	int ret_code;
 	int mother_count, father_count;
-	char name[MAX_LEN];
+	char name[MAX_LINE];
 
 	/* if first line is not NAME
 		   return ERROR (invalid first record)
