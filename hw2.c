@@ -1,84 +1,36 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-#define	MAX_LEN	256
-
-int read_line(int fd, char* buffer);
-int validate_keyword(int fd, int len, char* ending);
+#include "constants.h"
+#include "read_utils.h"
+#include "person_lists.h"
 
 int main()
 {
-	char name[MAX_LEN];
-	int kw;
+	/*char name[MAX_LEN];
+	int kw;*/
 
-	while ((kw = read_line(STDIN_FILENO, name)) >= 0) {
+	Person* head = (Person*) malloc(sizeof(Person));
+	Person* p1 = (Person*) malloc(sizeof(Person));
+	Person* p2 = (Person*) malloc(sizeof(Person));
+
+	head->next = p1;
+	p1->next = p2;
+	p2->next = NULL;
+
+	strcpy(head->name, "janis");
+	strcpy(p1->name, "peteris");
+	strcpy(p2->name, "andris");
+
+	print_persons(1, head);
+
+	/*while ((kw = read_line(STDIN_FILENO, name)) >= 0) {
 		printf("%d\n", kw);
-		printf("%s\n", name);	
+		Person p;
+		strcpy(p.name, name);
+		printf("%s\n", p.name);	
 	}
-	printf("%d\n", kw);
+	printf("%d\n", kw);*/
 	return 0;
-}
-
-int read_line(int fd, char* buffer)
-{
-	char c;
-	int i, kw, ws;
-
-	if (read(fd, &c, 1) == 0)
-		return -1;
-	while (c == '\n')
-		if (read(fd, &c, 1) == 0)
-			return -1;
-
-	if (c == 'N') {
-		if (!validate_keyword(fd, 4, "AME "))
-			return -2;
-		kw = 0;
-	}
-	else if (c == 'M') {
-		if (!validate_keyword(fd, 6, "OTHER "))
-			return -2;
-		kw = 1;
-	}
-	else if (c == 'F') {
-		if (!validate_keyword(fd, 6, "ATHER "))
-			return -2;
-		kw = 2;
-	}
-	else
-		return -2;
-
-	if (read(fd, &c, 1) == 0 || c == '\n' || c == ' ' || c == '\t')
-		return -3;
-	ws = 0;
-	buffer[0] = c;
-	for (i = 1; read(fd, &c, 1) != 0 && c != '\n'; i++) {
-		if (c == ' ') {
-			ws++;
-			if (ws > 1)
-				return -3;
-		}
-		else if (ws > 0)
-			ws = 0;
-		buffer[i] = c;
-	}
-	if (ws > 0)
-		return -3;
-	buffer[i] = '\0'; 	
-
-	return kw;
-}
-
-int validate_keyword(int fd, int len, char* ending)
-{
-	int c, i;
-	char temp[7];
-
-	for (i = 0; i < len && read(fd, &c, 1) != 0 && c != '\n'; i++)
-		temp[i] = c;
-	temp[i] = '\0';
-	if (i < len || strncmp(temp, ending, len) != 0)
-		return 0;
-	return 1;
 }
