@@ -28,16 +28,16 @@ void print_persons(int fd, Person** person_lists)
 
 int add_person(char* name, char* father_name, char* mother_name, Person** person_lists)
 {
-	if (name == NULL)
+	if (name == NULL || name[0] == '\0') 
 		return -1;
 	
 	int ret_code;
 	int known_mother, known_father;
 	int mother_set, father_set;
-	int person_exists, mother_exists, father_exists;
+	int mother_exists, father_exists;
 	int person_list, mother_list, father_list;
 
-	Person* p;
+	Person* person;
 	Person* mother;
 	Person* father;
 
@@ -49,7 +49,24 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 		known_mother = 0;
 	else
 		known_mother = 1;
-	
+
+	mother_set = 0; father_set = 0;
+	mother_exists = 0; father_exists = 0; 
+	person_list = -1; mother_list = -1; father_list = -1;
+	person = NULL; mother = NULL; father = NULL;
+
+	/*ret_code = find_person(name, &person, person_lists);
+	if (ret_code >= 0) {
+		person_list = ret_code;
+		if (person->mother != NULL) {
+			mother_set = 1;
+			if (known_mother && 
+		}
+	}
+	else {
+	}
+	*/	
+
 	/*
 	search for this person (name) through person lists
 		if this person exists
@@ -304,22 +321,18 @@ int read_persons(int fd, Person** person_lists)
 
 /* Searches for a person with name in person_lists. Stops when encounters first empty list.
 If person found, returns list index and saves this person's pointer in person.
-int find_person(char* name, Person* person, Person** person_lists).
-If person not found, returns -1, and sets person to NULL */
+If no person found, returns -1, and sets person to NULL */
 int find_person(char* name, Person** person, Person** person_lists)
 {
-	int i, len_needle, len_haystack;
+	int i;
 	Person* p;
 
-	len_needle = strlen(name);
+	if (name == NULL)
+		return -1;
+
 	for (i = 0; i < MAX_LISTS && (p = person_lists[i]) != NULL; i++) {
 		do {
-			len_haystack = strlen(p->name);	
-			if (len_needle != len_haystack) {
-				p = p->next;
-				continue;
-			}
-			if (strncmp(name, p->name, len_haystack) == 0) {
+			if (equal_names(name, p->name)) {
 				*person = p;
 				return i;
 			}
@@ -331,7 +344,7 @@ int find_person(char* name, Person** person, Person** person_lists)
 }
 
 /* Merges two lists (list1, list2) in person_lists. List indexes are provided.
-On error returns -1 */
+On error returns -1, otherwise - 0. */
 int merge_lists(int list1, int list2, Person** person_lists)
 {
 	Person* res;
@@ -371,11 +384,73 @@ int merge_lists(int list1, int list2, Person** person_lists)
 	return 0;
 }
 
+/* Inserts person into index-th list of person_lists. Assumes that generation is set. 
+On error returns -1, otherwise - 0. */
+int insert_person(Person* person, int index, Person** person_lists)
+{
+	int gen;
+	Person* p;
+	Person* prev;
 
+	if (index < 0 || index >= MAX_LISTS)
+		return -1;
 
+	p = person_lists[index];
+	if (p == NULL)
+		return -1;
 
+	gen = person->generation;
+	if (gen <= p->generation) {
+		person->next = p;
+		person_lists[index] = person;
+		return 0;
+	} 
+	prev = p;
+	p = p->next;
+	while (p != NULL) {
+		if (gen <= p->generation) {
+			prev->next = person;
+			person->next = p;
+			return 0;
+		}
+		prev = p;
+		p = p->next;
+	}
+	prev->next = person;
+	person->next = NULL;
 
+	return 0;
+}
 
+/* Inserts person into person_lists. Returns list index. Returns -1 on error. Returns -2 if person_lists is full. */
+int insert_list(Person* person, Person** person_lists)
+{
+	int i;
+
+	if (person == NULL)
+		return -1;
+
+	for (i = 0; i < MAX_LISTS && person_lists[i] != NULL; i++)
+		;
+	if (i == MAX_LISTS)
+		return -2;	
+	person_lists[i] = person;	
+
+	return i;
+}
+
+int equal_names(char* name1, char* name2)
+{
+	int len1, len2;
+
+	len1 = strlen(name1);
+	len2 = strlen(name2);
+	if (len1 != len2)
+		return 0;
+	if (strncmp(name1, name2, len1) == 0)
+		return 1;
+	return 0;
+}
 
 
 

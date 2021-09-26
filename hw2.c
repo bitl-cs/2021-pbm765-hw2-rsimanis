@@ -70,12 +70,36 @@ int main()
 	person_lists[1] = b1;
 	person_lists[2] = c1;
 
-	print_persons(1, person_lists);
+	printf("%d\n", equal_names("ab", "abc"));
+	printf("%d\n", equal_names("abc", "ab"));
+	printf("%d\n", equal_names("ab", "ab"));
+	printf("\n");
 	printf("\n");
 
-	merge_lists(0, 1, person_lists);
-	merge_lists(0, 2, person_lists);
+	Person* i1 = (Person*) malloc(sizeof(Person));
+	i1->generation = 22;
+	strcpy(i1->name, "insert1");
+	Person* i2 = (Person*) malloc(sizeof(Person));
+	i2->generation = 25;
+	strcpy(i2->name, "insert2");
+	int list = insert_list(i1, person_lists);
+	int index = insert_person(i2, list, person_lists);
+
+	printf("%d\n", list);
+	printf("%d\n", index);
+	printf("\n");
+
+	Person* found;
+	index = find_person("oskars", &found, person_lists);
+	printf("%d\n", index);
+	if (index >= 0)
+		printf("%d\n", found->generation);
+
 	print_persons(1, person_lists);
+
+	/*merge_lists(0, 1, person_lists);
+	merge_lists(0, 2, person_lists);
+	print_persons(1, person_lists);*/
 
 	free(a1);
 	free(a2);
@@ -89,6 +113,7 @@ int main()
 	free(c1);
 	free(c2);
 	free(c3);
+	free(i1);
 	free(person_lists);
 
 	return 0;
