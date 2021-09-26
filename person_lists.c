@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "constants.h"
@@ -43,8 +44,8 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 	if (name == NULL || name[0] == '\0') 
 		return -1;
 	
-	int ret_code, new_list;
-	int known_mother, known_father;
+	int ret_code;
+	int mother_known, father_known;
 	int mother_set, father_set;
 	int mother_exists, father_exists;
 	int person_list, mother_list, father_list;
@@ -54,13 +55,13 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 	Person* father;
 
 	if (father_name == NULL || father_name[0] == '\0')
-		known_father = 0;
+		father_known = 0;
 	else
-		known_father = 1;
+		father_known = 1;
 	if (mother_name == NULL || mother_name[0] == '\0')
-		known_mother = 0;
+		mother_known = 0;
 	else
-		known_mother = 1;
+		mother_known = 1;
 
 	mother_set = 0; father_set = 0;
 	mother_exists = 0; father_exists = 0; 
@@ -73,7 +74,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 		mother = person->mother;
 		father = person->father;
 		if (mother != NULL) {
-			if (known_mother && !equal_names(mother_name, mother->name))
+			if (mother_known && !equal_names(mother_name, mother->name))
 				return -1; /* error: single person cant have more than one mother and father */
 			mother_set = 1;
 			/* mother_exists = 1; */
@@ -87,7 +88,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 			}
 		}
 		if (father != NULL) {
-			if (known_father && !equal_names(father_name, father->name))
+			if (father_known && !equal_names(father_name, father->name))
 				return -1; /* error: single person cant have more than one mother and father */
 			father_set = 1;
 			/* father_exists = 1; */
@@ -108,7 +109,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 				if (father_exists) {
 					if (father->generation != mother->generation)
 						return -1; /* error: parents must come from the same generation */
-					merge_lists(person_list, father_list);
+					merge_lists(person_list, father_list, person_lists);
 					person->father = father;
 				}
 				else {
@@ -120,7 +121,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 				if (mother_exists) {
 					if (father->generation != mother->generation)
 						return -1; /* error: parents must come from the same generation */
-					merge_lists(person_list, mother_list);
+					merge_lists(person_list, mother_list, person_lists);
 					person->mother = mother;
 				}
 				else {
@@ -129,45 +130,45 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 				}
 			}
 			else {
-				if (mother_exist && father_exist) {
+				if (mother_exists && father_exists) {
 					if (father->generation != mother->generation)
 						return -1; /* error: parents must come from the same generation */
 					if (person->generation - father->generation != 1)
 						return -1; /* error: parents must be one generation above person */
 					if (mother_list == father_list) {
 						if (mother_list != person_list) {
-							merge_lists(mother_list, person_list);
+							merge_lists(mother_list, person_list, person_lists);
 						}
 					}
 					else {
 						if (mother_list == person_list) {
-							merge_lists(father_list, person_list);
+							merge_lists(father_list, person_list, person_lists);
 						}
 						else if (father_list == person_list) {
-							merge_lists(mother_list, person_list);
+							merge_lists(mother_list, person_list, person_lists);
 						}
 						else {
-							ret_code = merge_lists(mother_list, person_list);
-							merge_lists(ret_code, father_list);
+							ret_code = merge_lists(mother_list, person_list, person_lists);
+							merge_lists(ret_code, father_list, person_lists);
 						}
 					}
 				}
-				else if (mother_exist) {
+				else if (mother_exists) {
 					if (person->generation - mother->generation != 1)
 						return -1; /* error: parents must be one generation above person */
 					father = create_person(father_name, mother->generation);
 					insert_person(father, person_list, person_lists);
 					if (mother_list != person_list) {
-						merge_lists(mother_list, person_list);
+						merge_lists(mother_list, person_list, person_lists);
 					}
 				} 
-				else if (father_exist) {
+				else if (father_exists) {
 					if (person->generation - father->generation != 1)
 						return -1; /* error: parents must be one generation above person */
 					mother = create_person(mother_name, father->generation);
 					insert_person(mother, person_list, person_lists);
 					if (father_list != person_list) {
-						merge_lists(father_list, person_list);
+						merge_lists(father_list, person_list, person_lists);
 					}
 				}
 				else {
@@ -176,7 +177,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					insert_person(mother, person_list, person_lists);
 					insert_person(father, person_list, person_lists);
 				}
-				person->mother = m;
+				person->mother = mother;
 				person->father = father;	
 			}
 		}
@@ -186,7 +187,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					if (person->generation - mother->generation != 1)
 						return -1; /* error: must be one generation above */
 					if (person_list != mother_list)
-						merge_lists(mother_list, person_list);
+						merge_lists(mother_list, person_list, person_lists);
 				}
 				else {
 					mother = create_person(mother_name, person->generation - 1);
@@ -201,7 +202,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					if (person->generation - father->generation != 1)
 						return -1; /* error: must be one generation above */
 					if (person_list != father_list)
-						merge_lists(father_list, person_list);
+						merge_lists(father_list, person_list, person_lists);
 				}
 				else {
 					father = create_person(father_name, person->generation - 1);
@@ -235,7 +236,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 				person->generation = mother->generation + 1;
 				insert_person(person, mother_list, person_lists);
 				if (mother_list != father_list)
-					merge_lists(mother_list, father_list);
+					merge_lists(mother_list, father_list, person_lists);
 			}
 			else if (mother_exists) {
 				father = create_person(father_name, mother->generation);
@@ -284,7 +285,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 			person->father = father;
 		}
 		else {
-			insert_list(person);
+			insert_list(person, person_lists);
 		}
 	}
 
@@ -306,14 +307,14 @@ int read_persons(int fd, Person** person_lists)
 	mother_name[0] = '\0'; father_name[0] = '\0';
 	mother_count = 0; father_count = 0;
 
-	read_ret_code = read_line(STDIN_FILENO, name);
+	read_ret_code = read_line(fd, name);
 	if (read_ret_code < 0)
 		return read_ret_code; /* error: reading error */
 	if (read_ret_code > 0)
 		return -4; /* error: record must start with NAME */
 	strcpy(person_name, name);
 
-	while ((read_ret_code = read_line(STDIN_FILENO, name)) != -1) {
+	while ((read_ret_code = read_line(fd, name)) != -1) {
 		if (read_ret_code < -1)
 			return read_ret_code;
 		if (read_ret_code == 0) {

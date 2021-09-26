@@ -10,7 +10,7 @@ read_utils.o: read_utils.c
 	gcc -std=c90 -Wall -Wextra -Werror -fno-common -c read_utils.c
 
 person_lists.o: person_lists.c
-	gcc -std=c90 -fno-common -c person_lists.c
+	gcc -Wall -Wextra -Werror -std=c90 -fno-common -c person_lists.c
 
 clean:
 	rm hw2.exe hw2.o read_utils.o person_lists.o
