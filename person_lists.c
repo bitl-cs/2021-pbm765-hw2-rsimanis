@@ -11,7 +11,9 @@ void print_persons(int fd, Person** person_lists)
 	Person* p;
 
 	first = 1;
-	for (i = 0; i < MAX_LISTS && (p = person_lists[i]) != NULL; i++) {
+	for (i = 0; i < MAX_LISTS; i++) {
+		if ((p = person_lists[i]) == NULL)
+			continue;
 		if (!first)
 			write(fd, "\n", 1);
 		else if (first)
@@ -299,3 +301,93 @@ int read_persons(int fd, Person** person_lists)
 
 	return 0;
 }
+
+/* Searches for a person with name in person_lists. Stops when encounters first empty list.
+If person found, returns list index and saves this person's pointer in person.
+int find_person(char* name, Person* person, Person** person_lists).
+If person not found, returns -1, and sets person to NULL */
+int find_person(char* name, Person** person, Person** person_lists)
+{
+	int i, len_needle, len_haystack;
+	Person* p;
+
+	len_needle = strlen(name);
+	for (i = 0; i < MAX_LISTS && (p = person_lists[i]) != NULL; i++) {
+		do {
+			len_haystack = strlen(p->name);	
+			if (len_needle != len_haystack) {
+				p = p->next;
+				continue;
+			}
+			if (strncmp(name, p->name, len_haystack) == 0) {
+				*person = p;
+				return i;
+			}
+			p = p->next;
+		} while (p != NULL);
+	}
+	*person = NULL; /* maybe not needed? */
+	return -1;
+}
+
+/* Merges two lists (list1, list2) in person_lists. List indexes are provided.
+On error returns -1 */
+int merge_lists(int list1, int list2, Person** person_lists)
+{
+	Person* res;
+	Person* prev;
+	Person* p1 = person_lists[list1];
+	Person* p2 = person_lists[list2];
+
+	if (p1 == NULL || p2 == NULL || list1 == list2)
+		return -1;
+
+	if (p1->generation <= p2->generation) {
+		res = p1;
+		p1 = p1->next;
+	}
+	else {
+		res = p2;
+		p2 = p2->next;
+	}
+	prev = res;
+
+	while (p1 != NULL || p2 != NULL) {
+		if (p1 != NULL && (p2 == NULL || p1->generation <= p2->generation)) {
+			prev->next = p1;
+			prev = p1;
+			p1 = p1->next;
+		}
+		else {
+			prev->next = p2;
+			prev = p2;
+			p2 = p2->next;
+		}
+	}
+
+	person_lists[list1] = res;
+	person_lists[list2] = NULL;
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
