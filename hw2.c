@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "constants.h"
 #include "read_utils.h"
 #include "person_lists.h"
 

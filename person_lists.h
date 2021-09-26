@@ -1,7 +1,7 @@
 #ifndef _PERSON_LIST_H
 #define _PERSON_LIST_H
 
-#include "constants.h"
+#define	MAX_LISTS	1000
 
 typedef struct _Person {
 	char name[MAX_LINE];
