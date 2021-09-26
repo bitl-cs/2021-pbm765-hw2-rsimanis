@@ -12,7 +12,7 @@ int main()
 	person_lists = (Person**) calloc(MAX_LISTS, sizeof(Person*)); 
 	
 	ret_code = read_persons(STDIN_FILENO, person_lists);	
-	if (ret_code < 0) {
+	if (ret_code < -1) {
 		print_error(STDOUT_FILENO, ret_code);
 		return -1;
 	}
