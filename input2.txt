@@ -1,0 +1,3 @@
+NAME raivis
+MOTHER vita
+FATHER raimonds

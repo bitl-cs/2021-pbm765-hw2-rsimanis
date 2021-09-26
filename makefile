@@ -1,3 +1,5 @@
+MAKEFLAGS += --silent
+
 all: hw2.exe
 
 hw2.exe: hw2.o read_utils.o error_utils.o person_lists.o

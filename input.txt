@@ -1,0 +1,9 @@
+NAME Son son
+FATHER Father
+MOTHER Mother
+
+NAME Father
+MOTHER Granny
+NAME OtherSon
+MOTHER OtherMother
+FATHER OtherFather

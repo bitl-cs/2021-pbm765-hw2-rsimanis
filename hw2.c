@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 #include "read_utils.h"
 #include "error_utils.h"
 #include "person_lists.h"
@@ -15,10 +13,10 @@ int main()
 	
 	ret_code = read_persons(STDIN_FILENO, person_lists);	
 	if (ret_code < 0) {
-		print_error(STDIN_FILENO, ret_code);
+		print_error(STDOUT_FILENO, ret_code);
 		return -1;
 	}
-	print_persons(STDIN_FILENO, person_lists);
+	print_persons(STDOUT_FILENO, person_lists);
 	
 	free_person_lists(person_lists);
 	free(person_lists);
