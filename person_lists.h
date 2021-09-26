@@ -4,10 +4,10 @@
 #include "constants.h"
 
 typedef struct _Person {
-	int generation;
-	int known_mother;
-	int known_father;
 	char name[MAX_LINE];
+	int generation;
+	struct _Person* father;
+	struct _Person* mother;
 	struct _Person* next;
 } Person;
 

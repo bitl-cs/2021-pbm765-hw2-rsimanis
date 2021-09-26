@@ -31,6 +31,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 	
 	int ret_code;
 	int known_mother, known_father;
+	int mother_set, father_set;
 	int person_exists, mother_exists, father_exists;
 	int person_list, mother_list, father_list;
 
@@ -52,38 +53,107 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 		if this person exists
 			set person_list
 			set pointer *p to person
-			if this persons mother is set (*p)->mother
-				if known_mother
+			if persons mother is set (*p)->mother
+				mother_set = 1
+				if known_mother && mother_name != persons mother name
 					return ERROR (a person cant have two mothers)
 				mother_exists = 1
-				find this persons mother, store it in mother
+				store mother in the mother pointer here
+				find mothers list
 				set mother_list
 			if this persons father is set
-				if known_father
+				father_set = 1
+				if known_father && father_name != persons father name
 					return ERROR (a person cant have two fathers)
 				father_exists = 1
-				find this persons father, store it in father
+				store it in father pointer here
+				find its list
 				set father_list
 
-			if both mother and father exists
-				return 0
-			if mother exists
-				if father is known
-					create father
-					add father to mother_list 
-			else if father exists 
-				if mother is known 
-					create mother
-					add mother to father_list
+			if both mother and father are known
+				if both mother and father are set
+					return 0
+				else if mother is set
+					if father exists
+						if father generation != mother generation
+							return ERROR (parents must come from the same generation)
+						merge person_list and father_list
+						set persons father
+					else
+						create father
+						add father to person_list  // could just insert before mother
+						set persons father
+				else if father is set
+					if mother exists
+						if father generation != mother generation
+							return ERROR (parents must come from the same generation)
+						merge person_list and mother_list
+						set persons mother
+					else
+						create mother
+						add mother to person_list
+						set persons mother
+				else
+					if both mother and father exist
+						if mother_generation != father_generation
+							return ERROR (parents must come from the same generation)
+						if mother_list = father_list
+							merge person_list with mother_list 
+						else
+							merge person_list, mother_list, father_list
+						set persons mother and father
+					else if mother exist
+						if mothers generation is not one above persons generation
+							return ERROR (parents must be one generation above a pesons generation)
+						merge person_list and mother_list
+						create father
+						add father to newly created list (same generation as mother)
+						set persons mother and father
+					else if father exist
+						if fathers generation is not one above persons generation
+							return ERROR (parents must be one generation above a pesons generation)
+						merge person_list and father_list
+						create mother
+						add mother to newly created list (same generation as father)
+						set persons mother and father
+					else
+						create mother
+						create father
+						add mother to person list, one generation above person
+						add father to person list, one generation above person
+						set persons mother and father
+			else if mother is known
+				if mother is set 
+					return 0
+				else
+					if mother exists
+						if mothers generation is not one above persons generation
+							return ERROR (parents must be one generation above a persons generation)
+						merge person_list, mother_list
+						set persons mother
+					else
+						create mother
+						add mother to person_list, one generation above person
+
+			else if father is known
+				if father is set 
+					return 0
+				else
+					if father exists
+						if fathers generation is not one above persons generation
+							return ERROR (parents must be one generation above a persons generation)
+						merge person_list, father_list
+						set persons father
+					else
+						create father
+						add father to person_list, one generation above person
+
 			else
-				if father is known
-					create father
-					add father to person_list
-				if mother is known
-					create mother
-					add mother to person_list 
+				return 0
+
 		else
 			create a new person, store it in p
+			set its name
 			if mother is known
 				find mother
 				if mother exists
@@ -103,36 +173,75 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						return ERROR (parents for a single person must be from one generation)
 					if mother and father are from different lists
 						merge those lists.. merge(list_index1, list_index2)
-						add person to newly created list
+						add person to newly created list, one generation above mothers generation
 					else
-						add person to mother_list
+						add person to mother_list, one generation above mothers list
+					set persons mother and father
+					set persons generation
 				else if mother exists
-					add person to mother_list, one generation after the mother
-					add father to mother_list, same generation as mother
+					set persons generation (one below mother)
+					set persons mother
+					add person to mother_list
+					create father
+					set fathers name
+					set fathers generation (same as mother)
+					set persons father
+					add father to mother_list
 				else if father exists
-					add person to father_list, one generation after the father
-					add mother to father_list, same generation as father 
+					set persons generation (one below father)
+					set persons father
+					add person to father_list
+					create mother
+					set mothers name
+					set mothers generation (same as father)
+					set persons mother
+					add mother to father_list
 				else
-					create a new list
-					add person to it (generation 0)
-					add mother and father to it (generation -1)
+					set persons generation (0)
+					add person to data structure
+					set person_list
+					create mother
+					set mothers name
+					set mother generation (-1)
+					set persons mother
+					add mother to person_list 
+					create father
+					set fathers name
+					set fathers generation (-1)
+					set persons father
+					add father to person_list
 			else if mother is known
 				if mother exists
-					add person to mother_list, one generation after the mother
+					set persons generation (one below mother)
+					set persons mother
+					add person to mother_list
 				else
-					create a new list
-					add person to it (generation 0)
-					add mother to it (generation -1)	
-			else if father is set
+					set persons generation (0)
+					add person to data_structure
+					set person_list
+					create mother
+					set mothers name
+					set mothers generation (-1)
+					set persons mother
+					add mother to person_list
+			else if father is known 
 				if father exists
-					add person to father_list, one generation after the father
+					set persons generation (one below father)
+					set persons father
+					add person to father_list
 				else
-					create a new list
-					add person to it (generation 0)
-					add father to it (generation -1)
+					set persons generation (0)
+					add person to data_structure
+					set person_list
+					create father
+					set fathers name
+					set fathers generation (-1)
+					set persons father
+					add father to person_list
+
 			else
-				create a new list
-				add person to it
+				set persons generation (0)
+				add person to data_structure
 
 	*/
 	return 0;
@@ -140,31 +249,53 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 
 int read_persons(int fd, Person** person_lists)
 {
-	int ret_code;
+	int read_ret_code, add_ret_code;
 	int mother_count, father_count;
 	char name[MAX_LINE];
+	char person_name[MAX_LINE];
+	char mother_name[MAX_LINE];
+	char father_name[MAX_LINE];
 
 	/* if first line is not NAME
 		   return ERROR (invalid first record)
 	*/
-	while ((ret_code = read_line(STDIN_FILENO, name)) != -1) {
-		if (ret_code < -1)
-			return ret_code;
-		/* 
-			if ret_code = 0 
-				add_person()
-				mother_count = 0; father_count = 0	
-			else if ret_code = 1
-				mother_count++
-				if mother_count > 1
-					return ERROR (person cant have more than one mother)
-			else if ret_code = 2
-				father_count++
-				if father_count > 1
-					return ERROR (person cant have more than one father
-		*/
+	mother_name[0] = '\0'; father_name[0] = '\0';
+	mother_count = 0; father_count = 0;
+
+	read_ret_code = read_line(STDIN_FILENO, name);
+	if (read_ret_code < 0)
+		return read_ret_code; /* error: reading error */
+	if (read_ret_code > 0)
+		return -4; /* error: record must start with NAME */
+	strcpy(person_name, name);
+
+	while ((read_ret_code = read_line(STDIN_FILENO, name)) != -1) {
+		if (read_ret_code < -1)
+			return read_ret_code;
+		if (read_ret_code == 0) {
+			add_ret_code = add_person(person_name, father_name, mother_name, person_lists);
+			if (add_ret_code < 0)
+				return add_ret_code; /* error */
+			mother_name[0] = '\0'; father_name[0] = '\0';
+			mother_count = 0; father_count = 0;
+			strcpy(person_name, name);
+		}
+		else if (read_ret_code == 1) {
+			mother_count++;	
+			if (mother_count > 1)
+				return -5; /* error: a single person can have at most one parent of each gender */
+			strcpy(mother_name, name);
+		}
+		else if (read_ret_code == 2) {
+			father_count++;
+			if (father_count > 1)
+				return -5; /* error: a single person can have at most one parent of each gender */
+			strcpy(father_name, name);
+		}
 	}
-	/* call add_person() */
+	add_ret_code = add_person(person_name, father_name, mother_name, person_lists);
+	if (add_ret_code < 0)
+		return add_ret_code; /* error */
 
 	return 0;
 }
