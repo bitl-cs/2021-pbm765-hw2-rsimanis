@@ -1,6 +1,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "read_utils.h"
+#include "error_utils.h"
 
 int read_line(int fd, char* buffer)
 {
@@ -15,38 +16,38 @@ int read_line(int fd, char* buffer)
 
 	if (c == 'N') {
 		if (!validate_keyword(fd, 4, "AME "))
-			return -2;
+			return E_INVALID_KEYWORD;
 		kw = 0;
 	}
 	else if (c == 'M') {
 		if (!validate_keyword(fd, 6, "OTHER "))
-			return -2;
+			return E_INVALID_KEYWORD;
 		kw = 1;
 	}
 	else if (c == 'F') {
 		if (!validate_keyword(fd, 6, "ATHER "))
-			return -2;
+			return E_INVALID_KEYWORD;
 		kw = 2;
 	}
 	else
-		return -2;
+		return E_INVALID_KEYWORD;
 
 	if (read(fd, &c, 1) == 0 || c == '\n' || c == ' ' || c == '\t')
-		return -3;
+		return E_INVALID_NAME;
 	ws = 0;
 	buffer[0] = c;
 	for (i = 1; read(fd, &c, 1) != 0 && c != '\n'; i++) {
 		if (c == ' ') {
 			ws++;
 			if (ws > 1)
-				return -3;
+				return E_INVALID_NAME;
 		}
 		else if (ws > 0)
 			ws = 0;
 		buffer[i] = c;
 	}
 	if (ws > 0)
-		return -3;
+		return E_INVALID_NAME;
 	buffer[i] = '\0'; 	
 
 	return kw;
