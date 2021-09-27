@@ -2,8 +2,11 @@
 
 make --silent --no-print-directory -C .. all
 
-for (( i=0; i<=1; i++ ))
+for (( i=0; i<=100; i++ ))
 do
+	if ! [ -f 'inputs/input'"$1" ]; then
+		continue
+	fi
 	../hw2.exe <'inputs/input'"$i" >'test.out'
 	diff 'test.out' 'outputs/output'"$i" >/dev/null
 	if [ $? -ne 0 ]; then

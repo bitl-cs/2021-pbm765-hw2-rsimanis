@@ -43,10 +43,10 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 		return -1;
 	
 	int ret_code;
-	int mother_known, father_known;
-	int mother_set, father_set;
-	int mother_exists, father_exists;
-	int person_list, mother_list, father_list;
+	int mother_known, father_known; /* indicates whether mother_name or father_name (respectively) is given) */
+	int mother_set, father_set; /* indicates whether a person already has parent attached to it */
+	int mother_exists, father_exists; /* indicates whether a mother or father (respectively) is already present in one of family trees */
+	int person_list, mother_list, father_list; /* index of a list, in which the respective person is located (exists) */
 
 	Person* person;
 	Person* mother;
@@ -111,7 +111,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					}
 				}
 				else {
-					father = create_person(father_name, mother->generation);
+					father = create_person(father_name, person->generation - 1);
 					ret_code = insert_person(father, person_list, person_lists);
 					if (ret_code < 0)
 						return ret_code;
@@ -131,7 +131,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					}
 				}
 				else {
-					mother = create_person(mother_name, father->generation);
+					mother = create_person(mother_name, person->generation - 1);
 					ret_code = insert_person(mother, person_list, person_lists);
 					if (ret_code < 0)
 						return ret_code;
@@ -171,7 +171,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						
 				}
 				else if (mother_exists) {
-					father = create_person(father_name, mother->generation);
+					father = create_person(father_name, person->generation - 1);
 					ret_code = insert_person(father, person_list, person_lists);
 					if (ret_code < 0)
 						return ret_code;
@@ -187,7 +187,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					}
 				} 
 				else if (father_exists) {
-					mother = create_person(mother_name, father->generation);
+					mother = create_person(mother_name, person->generation - 1);
 					ret_code = insert_person(mother, person_list, person_lists);
 					if (ret_code < 0)
 						return ret_code;
@@ -436,9 +436,7 @@ int find_person(char* name, Person** person, Person** person_lists)
 	return -1;
 }
 
-
-/* Merges two lists (list1, list2) in person_lists. List indexes are provided.
-On error returns negative value, otherwise - 0. */
+/* merges final_list and adjusted_list into one list by incrementing each person's generation by diff inside adjusted_list */
 int merge_lists(int final_list, int adjusted_list, int diff, Person** person_lists)
 {
 	Person* res;
@@ -461,7 +459,7 @@ int merge_lists(int final_list, int adjusted_list, int diff, Person** person_lis
 	prev = res;
 
 	while (fl != NULL || al != NULL) {
-		if (fl != NULL && (al == NULL || fl->generation <= (al->generation += diff))) {
+		if (fl != NULL && (al == NULL || fl->generation <= al->generation)) {
 			prev->next = fl;
 			prev = fl;
 			fl = fl->next;
@@ -469,6 +467,7 @@ int merge_lists(int final_list, int adjusted_list, int diff, Person** person_lis
 		else {
 			prev->next = al;
 			prev = al;
+			al->generation += diff;
 			al = al->next;
 		}
 	}
@@ -579,23 +578,25 @@ int read_line(int fd, char* buffer)
 			return -1;
 
 	if (c == 'N') {
-		if (!validate_keyword(fd, 4, "AME "))
+		if (!validate_keyword(fd, 3, "AME"))
 			return E_INVALID_KEYWORD;
 		kw = 0;
 	}
 	else if (c == 'M') {
-		if (!validate_keyword(fd, 6, "OTHER "))
+		if (!validate_keyword(fd, 5, "OTHER"))
 			return E_INVALID_KEYWORD;
 		kw = 1;
 	}
 	else if (c == 'F') {
-		if (!validate_keyword(fd, 6, "ATHER "))
+		if (!validate_keyword(fd, 5, "ATHER"))
 			return E_INVALID_KEYWORD;
 		kw = 2;
 	}
 	else
 		return E_INVALID_KEYWORD;
 
+	if (read(fd, &c, 1) == 0 || c != ' ')
+		return E_INVALID_NAME;
 	if (read(fd, &c, 1) == 0 || c == '\n' || c == ' ' || c == '\t')
 		return E_INVALID_NAME;
 	ws = 0;
@@ -617,7 +618,7 @@ int read_line(int fd, char* buffer)
 	return kw;
 }
 
-
+/* helper function for read_line() */
 int validate_keyword(int fd, int len, char* ending)
 {
 	int c, i;
@@ -631,7 +632,7 @@ int validate_keyword(int fd, int len, char* ending)
 	return 1;
 }
 
-
+/* prints error message that corresponds to error_code to file descriptor fd */
 void print_error(int fd, int error_code)
 {
 	char* error_msg;
@@ -674,4 +675,3 @@ void print_error(int fd, int error_code)
 	write(fd, error_msg, strlen(error_msg));
 	write(fd, "\n", 1);
 }
-

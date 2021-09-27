@@ -1,0 +1,55 @@
+------- star indicates a case where test is needed -------
+
+person exists
+	mother and father known
+		*mother and father set
+		mother set
+			father exists
+				*father in same list
+				*father in different list
+			*father does no exist
+		father set
+			mother exists
+				*mother in same list
+				*mother in different list
+			*mother does not exist
+		no one is set
+			mother and father exists
+				*mother and father in same list
+				*mother in same list and father in different list
+				*mother in same list
+				*mother in different list			
+			mother exists
+				*mother in same list
+				*mother in different list - input19
+			father exists
+				*father in same list
+				*father in different list
+			*no one exists
+	mother known
+		mother is not set
+			mother exist
+				*mother in same list
+				*mother in different list
+			*mother does not exist
+	father known
+		father is not set
+			father exists
+				*father in same list
+				*father in different list
+			*father does not exist - input24
+person does not exist
+	mother and father known
+		mother and father exists
+			*mother and father in same list - input22, input23
+			*mother and father in different lists - input21
+		*mother exists - input19
+		*father exists - input20
+		*no one exists - input18
+	mother is known
+		*mother exists - input17
+		*mother does not exist - input16
+	father is known
+		*father exists - input15
+		*father does not exist - input14
+	*no one is known - input13
