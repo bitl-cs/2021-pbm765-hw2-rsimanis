@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <unistd.h>
-#include "read_utils.h"
-#include "error_utils.h"
 #include "person_lists.h"
 
 int main()
