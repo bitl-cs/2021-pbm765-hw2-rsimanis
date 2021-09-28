@@ -447,19 +447,19 @@ int merge_lists(int final_list, int adjusted_list, int diff, Person** person_lis
 	if (fl == NULL || al == NULL || final_list == adjusted_list)
 		return E_MERGE_ARGUMENTS; /* error */
 
-	al->generation += diff;
-	if (fl->generation <= al->generation) {
+	if (fl->generation <= al->generation + diff) {
 		res = fl;
 		fl = fl->next;
 	}
 	else {
 		res = al;
+		al->generation += diff;
 		al = al->next;
 	}
 	prev = res;
 
 	while (fl != NULL || al != NULL) {
-		if (fl != NULL && (al == NULL || fl->generation <= al->generation)) {
+		if (fl != NULL && (al == NULL || fl->generation <= al->generation + diff)) {
 			prev->next = fl;
 			prev = fl;
 			fl = fl->next;
@@ -651,7 +651,7 @@ void print_error(int fd, int error_code)
 			error_msg = "Both parents must come from the same generation";
 			break;
 		case E_PARRENT_ABOVE:
-			error_msg = "Parent must be generation above person";
+			error_msg = "Parents must be one generation above person";
 			break;
 		case E_INVALID_RECORD_START:
 			error_msg = "Person record must start with keyword NAME";

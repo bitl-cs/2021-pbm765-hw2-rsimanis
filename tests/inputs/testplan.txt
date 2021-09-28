@@ -24,19 +24,21 @@ person exists
 				*mother in different list - input19
 			father exists
 				*father in same list
-				*father in different list
-			*no one exists
+				*father in different list - input37
+			*no one exists - input36
 	mother known
+		*mother is set - input34, input35
 		mother is not set
 			mother exist
-				*mother in same list
-				*mother in different list
-			*mother does not exist
+				*mother in same list - input32, input33
+				*mother in different list - input31
+			*mother does not exist - input30
 	father known
+		*father is set - input 28, input29
 		father is not set
 			father exists
-				*father in same list
-				*father in different list
+				*father in same list - input26, input27
+				*father in different list - input25
 			*father does not exist - input24
 person does not exist
 	mother and father known
