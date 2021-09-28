@@ -15,11 +15,14 @@
 #define		E_INSERT_PERSON_ARGUMENTS		-9
 #define		E_INSERT_LIST_ARGUMENTS			-10
 #define		E_INSERT_LIST_FULL				-11
+#define		E_LOOPS							-12
+#define		E_PARRENT_TWO_GENDERS			-13
 
 
 typedef struct _Person {
 	char name[MAX_LINE];
 	int generation;
+	int gender;
 	struct _Person* father;
 	struct _Person* mother;
 	struct _Person* next;

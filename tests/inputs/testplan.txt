@@ -6,7 +6,7 @@ person exists
 		mother set
 			father exists
 				*father in same list
-				*father in different list
+				*father in different list - input37
 			*father does no exist
 		father set
 			mother exists
@@ -17,14 +17,14 @@ person exists
 			mother and father exists
 				*mother and father in same list
 				*mother in same list and father in different list
-				*mother in same list
-				*mother in different list			
+				*mother in same list - 
+				*mother in different list - input46	
 			mother exists
-				*mother in same list
+				*mother in same list - input44, input45
 				*mother in different list - input19
 			father exists
-				*father in same list
-				*father in different list - input37
+				*father in same list - input42, input43
+				*father in different list - input41
 			*no one exists - input36
 	mother known
 		*mother is set - input34, input35

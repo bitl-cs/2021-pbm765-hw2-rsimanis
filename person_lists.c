@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -9,6 +8,7 @@ Person* create_person(char* name, int generation)
 	Person* p = (Person*) malloc(sizeof(Person));
 	strcpy(p->name, name);
 	p->generation = generation;
+	p->gender = -1;
 	p->father = NULL;
 	p->mother = NULL;
 	p->next = NULL;
@@ -66,16 +66,27 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 	person_list = -1; mother_list = -1; father_list = -1;
 	person = NULL; mother = NULL; father = NULL;
 
+	if (mother_known && father_known)
+		if (equal_names(mother_name, father_name))
+			return E_PARRENT_TWO_GENDERS;
 	if (mother_known) {
+		if (equal_names(name, mother_name))
+			return E_LOOPS;
 		ret_code = find_person(mother_name, &mother, person_lists);
 		if (ret_code >= 0) {
+			if (mother->gender == 1)
+				return E_PARRENT_TWO_GENDERS;
 			mother_list = ret_code;
 			mother_exists = 1;
 		}
 	}
 	if (father_known) {
+		if (equal_names(name, father_name))
+			return E_LOOPS;
 		ret_code = find_person(father_name, &father, person_lists);
 		if (ret_code >= 0) {
+			if (father->gender == 0)
+				return E_PARRENT_TWO_GENDERS;
 			father_list = ret_code;
 			father_exists = 1;
 		}
@@ -117,6 +128,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						return ret_code;
 				}
 				person->father = father;
+				father->gender = 1;
 			}
 			else if (father_set) {
 				if (mother_exists) {
@@ -137,6 +149,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						return ret_code;
 				}
 				person->mother = mother;
+				mother->gender = 0;
 			}
 			else {
 				if (mother_exists && father_exists) {
@@ -214,6 +227,8 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 				}
 				person->mother = mother;
 				person->father = father;	
+				mother->gender = 0;
+				father->gender = 1;
 			}
 		}
 		else if (mother_known) {
@@ -236,6 +251,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						return ret_code;
 				}
 				person->mother = mother;
+				mother->gender = 0;
 			}
 		}
 		else if (father_known) {
@@ -258,6 +274,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 						return ret_code;
 				}
 				person->father = father;
+				father->gender = 1;
 			}
 		}
 	}
@@ -314,6 +331,8 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 			}
 			person->mother = mother;
 			person->father = father;
+			mother->gender = 0;
+			father->gender = 1;
 		}
 		else if (mother_known) {
 			if (mother_exists) {
@@ -332,6 +351,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					return ret_code;
 			}
 			person->mother = mother;
+			mother->gender = 0;
 		}
 		else if (father_known) {
 			if (father_exists) {
@@ -350,6 +370,7 @@ int add_person(char* name, char* father_name, char* mother_name, Person** person
 					return ret_code;
 			}
 			person->father = father;
+			father->gender = 1;
 		}
 		else {
 			ret_code = insert_list(person, person_lists);
@@ -667,6 +688,12 @@ void print_error(int fd, int error_code)
 			break;
 		case E_INSERT_LIST_FULL:
 			error_msg = "insert_list(): Person lists data structure is full";
+			break;
+		case E_LOOPS:
+			error_msg = "A person can't be an ancestor of themselves";
+			break;
+		case E_PARRENT_TWO_GENDERS:
+			error_msg = "A single person cannot be both father and mother";
 			break;
 		default:
 			error_msg = "Couldn't find a matching error message";
