@@ -4,10 +4,11 @@
 
 int main()
 {
-	int ret_code;
-	Person** person_lists;
-	
-	person_lists = (Person**) calloc(MAX_LISTS, sizeof(Person*)); 
+	int ret_code, i;
+	Person* person_lists[MAX_LISTS];
+
+	for (i = 0; i < MAX_LISTS; i++)
+		person_lists[i] = NULL;
 	
 	ret_code = read_persons(STDIN_FILENO, person_lists);	
 	if (ret_code < -1) {
@@ -15,9 +16,7 @@ int main()
 		return -1;
 	}
 	print_persons(STDOUT_FILENO, person_lists);
-	
 	free_person_lists(person_lists);
-	free(person_lists);
 
 	return 0;
 }
