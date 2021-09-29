@@ -2,23 +2,23 @@
 
 person exists
 	mother and father known
-		*mother and father set
+		*mother and father set - input60, input61
 		mother set
 			father exists
-				*father in same list
+				*father in same list - input58, input59
 				*father in different list - input37
-			*father does no exist
+			*father does no exist - input57
 		father set
 			mother exists
-				*mother in same list
-				*mother in different list
-			*mother does not exist
+				*mother in same list - input55, input56
+				*mother in different list - input53, input54
+			*mother does not exist - input52
 		no one is set
 			mother and father exists
-				*mother and father in same list
-				*mother in same list and father in different list
-				*mother in same list - 
-				*mother in different list - input46	
+				*mother and father in same list - input49, input50, input51
+				*mother in same list - input48
+				*father in same list - input47	
+				mother and father in different lists - input46
 			mother exists
 				*mother in same list - input44, input45
 				*mother in different list - input19
